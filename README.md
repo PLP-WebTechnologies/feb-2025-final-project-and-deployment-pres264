@@ -9,8 +9,7 @@
 - **Modern UI** with animations and interactive elements
 
 ### **Deployment**
-- **GitHub Pages:** [https://yourusername.github.io/ecommerce-website](https://yourusername.github.io/ecommerce-website)  
-- **Netlify/Vercel:** [https://shopeasy.netlify.app](https://shopeasy.netlify.app)  
+- **Netlify/Vercel:** ([https://shopeasy.netlify.app](https://incomparable-torte-40aea1.netlify.app/))  
 
 ---
 
