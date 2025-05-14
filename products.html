@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - ShopEasy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Header (same as index.html) -->
+    <header class="main-header">
+        <!-- Copy the header from index.html -->
+    </header>
+
+    <!-- Products Page Content -->
+    <section class="products-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>Our Products</h1>
+                <div class="breadcrumb">
+                    <a href="index.html">Home</a> / <span>Products</span>
+                </div>
+            </div>
+            
+            <div class="products-filter">
+                <div class="filter-section">
+                    <h3>Categories</h3>
+                    <ul class="category-filter">
+                        <li><a href="images/smartphonex.png" data-category="all" class="active">All Products</a></li>
+                        <li><a href="images/headphones.png" data-category="electronics">Electronics</a></li>
+                        <li><a href="images/men casual tshirt.png" data-category="fashion">Fashion</a></li>
+                        <li><a href="images/home and garden.png" data-category="home">Home & Garden</a></li>
+                    </ul>
+                </div>
+                <div class="filter-section">
+                    <h3>Sort By</h3>
+                    <select id="sort-products">
+                        <option value="default">Default</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Rating</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="products-grid" id="all-products">
+                <!-- Products will be loaded via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (same as index.html) -->
+    <footer class="main-footer">
+        <!-- Copy the footer from index.html -->
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Load all products
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsContainer = document.getElementById('all-products');
+            
+            function displayProducts(productsToDisplay) {
+                productsContainer.innerHTML = '';
+                
+                if (productsToDisplay.length === 0) {
+                    productsContainer.innerHTML = '<p class="no-products">No products found in this category.</p>';
+                    return;
+                }
+                
+                productsToDisplay.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <div class="product-image">
+                            <img src="${product.image}" alt="${product.name}">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-price">$${product.price.toFixed(2)}</div>
+                            <div class="product-rating">
+                                ${getRatingStars(product.rating)}
+                            </div>
+                            <a href="product-detail.html?id=${product.id}" class="btn">View Details</a>
+                            <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
+                        </div>
+                    `;
+                    productsContainer.appendChild(productCard);
+                });
+                
+                // Add event listeners to "Add to Cart" buttons
+                document.querySelectorAll('.add-to-cart').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = parseInt(this.getAttribute('data-id'));
+                        addToCart(productId);
+                        updateCartCount();
+                    });
+                });
+            }
+            
+            // Initial display of all products
+            displayProducts(products);
+            
+            // Category filter
+            document.querySelectorAll('.category-filter a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active class
+                    document.querySelector('.category-filter a.active').classList.remove('active');
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    let filteredProducts = products;
+                    
+                    if (category !== 'all') {
+                        filteredProducts = products.filter(product => product.category === category);
+                    }
+                    
+                    displayProducts(filteredProducts);
+                });
+            });
+            
+            // Sort functionality
+            document.getElementById('sort-products').addEventListener('change', function() {
+                const sortValue = this.value;
+                let sortedProducts = [...products];
+                
+                switch(sortValue) {
+                    case 'price-low':
+                        sortedProducts.sort((a, b) => a.price - b.price);
+                        break;
+                    case 'price-high':
+                        sortedProducts.sort((a, b) => b.price - a.price);
+                        break;
+                    case 'rating':
+                        sortedProducts.sort((a, b) => b.rating - a.rating);
+                        break;
+                    case 'name':
+                        sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                    default:
+                        // Default sorting (original order)
+                        break;
+                }
+                
+                // Get current category
+                const activeCategory = document.querySelector('.category-filter a.active').getAttribute('data-category');
+                if (activeCategory !== 'all') {
+                    sortedProducts = sortedProducts.filter(product => product.category === activeCategory);
+                }
+                
+                displayProducts(sortedProducts);
+            });
+        });
+    </script>
+</body>
+</html>

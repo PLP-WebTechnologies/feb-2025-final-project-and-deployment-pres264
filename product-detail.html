@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - ShopEasy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Header (same as index.html) -->
+    <header class="main-header">
+        <!-- Copy the header from index.html -->
+    </header>
+
+    <!-- Product Detail Content -->
+    <section class="product-detail">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="products.html">Products</a> / <span>Product Details</span>
+            </div>
+            
+            <div class="product-detail-container" id="product-detail">
+                <!-- Product will be loaded via JavaScript -->
+            </div>
+            
+            <div class="related-products">
+                <h2>You May Also Like</h2>
+                <div class="products-grid" id="related-products">
+                    <!-- Related products will be loaded via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (same as index.html) -->
+    <footer class="main-footer">
+        <!-- Copy the footer from index.html -->
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Helper function to ensure correct image path
+        function getImagePath(imageName) {
+            // Adjust this based on your actual image location
+            // Option 1: If images are in an 'images' folder in your project
+            return `images/${imageName}`;
+            
+            // Option 2: If using full paths (like from your desktop)
+            // return `file:///C:/Users/test/Desktop/Final Project and Deployments/images/${imageName}`;
+            
+            // Note: file:// paths will only work locally and have security restrictions
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get product ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+            
+            // Find the product
+            const product = products.find(p => p.id === productId);
+            
+            if (product) {
+                // Display product details
+                const productDetailContainer = document.getElementById('product-detail');
+                productDetailContainer.innerHTML = `
+                    <div class="product-images">
+                        <div class="main-image">
+                            <img src="${getImagePath(product.image)}" alt="${product.name}" onerror="this.src='images/placeholder.jpg'">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h1>${product.name}</h1>
+                        <div class="product-meta">
+                            <div class="product-rating">
+                                ${getRatingStars(product.rating)} <span>${product.rating.toFixed(1)}</span>
+                            </div>
+                            <div class="product-sku">SKU: ${product.id}</div>
+                        </div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-description">
+                            <p>${product.description}</p>
+                        </div>
+                        <div class="product-actions">
+                            <div class="quantity-selector">
+                                <button class="quantity-btn minus"><i class="fas fa-minus"></i></button>
+                                <input type="number" value="1" min="1" class="quantity-input">
+                                <button class="quantity-btn plus"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <button class="btn add-to-cart" data-id="${product.id}">Add to Cart</button>
+                        </div>
+                        <div class="product-categories">
+                            <span>Category:</span> 
+                            <a href="products.html">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</a>
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listeners (same as before)...
+                
+                // Display related products
+                const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+                const relatedProductsContainer = document.getElementById('related-products');
+                
+                if (relatedProducts.length > 0) {
+                    relatedProducts.forEach(product => {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card';
+                        productCard.innerHTML = `
+                            <div class="product-image">
+                                <img src="${getImagePath(product.image)}" alt="${product.name}" onerror="this.src='images/placeholder.jpg'">
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">${product.name}</h3>
+                                <div class="product-price">$${product.price.toFixed(2)}</div>
+                                <div class="product-rating">
+                                    ${getRatingStars(product.rating)}
+                                </div>
+                                <a href="product-detail.html?id=${product.id}" class="btn">View Details</a>
+                            </div>
+                        `;
+                        relatedProductsContainer.appendChild(productCard);
+                    });
+                } else {
+                    relatedProductsContainer.innerHTML = '<p>No related products found.</p>';
+                }
+            } else {
+                // Product not found
+                document.getElementById('product-detail').innerHTML = `
+                    <div class="product-not-found">
+                        <h2>Product Not Found</h2>
+                        <p>The product you're looking for doesn't exist or has been removed.</p>
+                        <a href="products.html" class="btn">Browse Products</a>
+                    </div>
+                `;
+                document.querySelector('.related-products').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
